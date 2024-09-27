@@ -1,0 +1,164 @@
+import datetime
+import numpy
+import re
+
+
+
+def verificar_patente(patente):
+    patron = r'^[A-Z]{2,4}\d{2,4}'
+    return re.match(patron, patente) is not None
+
+def verificar_marca(marca):
+    return 2 <= len(marca) <= 12
+def verificar_precio(precio):
+    return precio > 6880000
+
+
+def registrar_vehiculo():
+    tipo = input("Ingresa el tipo de vehículo (Auto, SUV, Pickup, Van): ")
+    patente = input("ingrese patente (AA0000 o AABB00): ").upper() 
+
+    while not verificar_patente(patente):
+      print("Patente inválida. favor elegir (AA0000 o AABB00).").upper()
+      patente = input("Ingresa nuevamente la patente del vehículo: ").upper() 
+
+    marca = input("Ingresa marca del vehículo: ").upper()
+
+    while not verificar_marca(marca):
+        print("La marca debe tener entre 2 y 12 caracteres.")
+        marca = input("Ingresa nuevamente marca del vehículo: ")
+
+    modelo = input("Ingresa el modelo del vehículo: ")
+    precio = float(input("Ingresa el precio del vehículo: "))
+
+    while not verificar_precio(precio):
+        print("El precio debe ser mayor a $6.880.000.")
+        precio = float(input("Ingresa nuevamente el precio del vehículo: "))
+
+    def registrar_multas():
+      multas = []
+      while True:
+        monto = float(input("Ingresa el monto de la multa (0 para salir): "))
+        if monto == 0:
+            break
+        fecha = input("Ingresa la fecha de la multa (d/m/a): ")
+        multas.append({"monto": monto, "fecha": fecha})
+      return multas
+      
+    multas = registrar_multas()
+    
+    fecha_registro = input("Ingresa la fecha de registro del vehículo (dd/mm/aaaa): ")
+    nombre_dueno = input("Ingresa el nombre del dueño: ")
+
+    vehiculo = {
+        "tipo": tipo,
+        "patente": patente,
+        "marca": marca,
+        "modelo": modelo,
+        "precio": precio,
+        "multas": multas,
+        "fecha_registro": fecha_registro,
+        "dueño": nombre_dueno
+    }
+
+    return vehiculo
+
+def mostrar_vehiculo(vehiculo):
+    print("\nInformación del Vehículo:")
+    print(f"Tipo: {vehiculo['tipo']}")
+    print(f"Patente: {vehiculo['patente']}")
+    print(f"Marca: {vehiculo['marca']}")
+    print(f"Modelo: {vehiculo['modelo']}")
+    print(f"Precio: {vehiculo['precio']}")
+    print(f"Fecha de Registro: {vehiculo['fecha_registro']}")
+    print(f"Dueño: {vehiculo['dueño']}")
+    print("Multas:")
+    for multa in vehiculo['multas']:
+        print(f" - Monto: {multa['monto']}, Fecha: {multa['fecha']}")
+
+def buscar_vehiculo_por_patente(vehiculos, patente_buscada):
+    patente_buscada = patente_buscada.upper()
+    for vehiculo in vehiculos:
+        if vehiculo['patente'] == patente_buscada:
+            return vehiculo
+    return None
+
+def imprimir_certificado(vehiculo, tipo_certificado):
+    if tipo_certificado == "Emisión de Contaminantes":
+        monto = 3000
+    elif tipo_certificado == "Anotaciones Vigentes":
+        monto = 2500
+    elif tipo_certificado == "Multas":
+        monto = 4500
+    else:
+        monto = 0
+
+    print(f"\n--- Certificado de {tipo_certificado} ---")
+    print(f"Patente: {vehiculo['patente']}")
+    print(f"Dueño: {vehiculo['dueño']}")
+    print(f"Valor del certificado: ${monto}")
+    print("----------------------------------------")
+    return monto # Return the certificate amount
+
+def sub_menu_certificados(vehiculo):
+    while True:
+        print("\nSubmenú de Certificados:")
+        print("1 Emisión de Contaminantes ($3500)")
+        print("2 Anotaciones Vigentes ($2500)")
+        print("3 Multas ($4500)")
+        print("4 Volver al menú principal")
+        
+        opcion = input("Selecciona una opción: ")
+        if opcion == "1":
+            imprimir_certificado(vehiculo, "Emisión de Contaminantes")
+        elif opcion == "2":
+            imprimir_certificado(vehiculo, "Anotaciones Vigentes")
+        elif opcion == "3":
+            imprimir_certificado(vehiculo, "Multas")
+        elif opcion == "4":
+            break
+        else:
+            print("Opción no válida. Por favor, intenta de nuevo.")
+
+
+
+
+def menu_principal():
+    vehiculos = []
+    nombre = "Tu Nombre"
+    apellido = "Tu Apellido"
+    version_programa = "1.0"
+
+    while True:
+        print("\nMenú Principal:")
+        print("1. Registrar vehículo")
+        print("2. Buscar vehículo por patente")
+        print("3. Imprimir certificados")
+        print("4. Salir")
+        
+        opcion = input("Selecciona una opción: ")
+
+        if opcion == "1":
+            vehiculos.append(registrar_vehiculo())
+        elif opcion == "2":
+            patente_buscada = input("Ingresa la patente del vehículo que deseas buscar: ").upper()
+            vehiculo_encontrado = buscar_vehiculo_por_patente(vehiculos, patente_buscada)
+            if vehiculo_encontrado:
+                mostrar_vehiculo(vehiculo_encontrado)
+            else:
+                print(f"No se encontró ningún vehículo con la patente {patente_buscada}.")
+        elif opcion == "3":
+            patente_buscada = input("Ingresa la patente del vehículo para imprimir certificados: ").upper()
+            vehiculo_encontrado = buscar_vehiculo_por_patente(vehiculos, patente_buscada)
+            if vehiculo_encontrado:
+                sub_menu_certificados(vehiculo_encontrado)
+            else:
+                print(f"No se encontró ningún vehículo con la patente {patente_buscada}.")
+        elif opcion == "4":
+          print(f"\nGracias por utilizar el programa. ejecutado por bairo nmuñoz - Versión_1.0 ")
+          break
+        else:
+            print("Opción no válida. Por favor, selecciona una opción correcta.")
+
+
+menu_principal()
