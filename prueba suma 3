@@ -1,11 +1,6 @@
 import datetime
 import re
 
-def validar_patente(patente):
-  if (len(patente) == 6 and patente[:2].isalpha() and patente[2:].isdigit()) or (len(patente) == 6 and patente[:4].isalpha() and patente[4:].isdigit()):
-   return True
-  return False
-
 def verificar_patente(patente):
     patron = r'^[A-Z]{2,4}\d{2,4}'
     return re.match(patron, patente) is not None
