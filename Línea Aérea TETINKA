@@ -1,0 +1,165 @@
+import numpy as np
+import re 
+
+
+sientos_premium = {1, 3, 4, 6, 7, 9, 10, 12, 13, 15, 16, 18, 19, 21, 22, 24, 25, 27, 28, 30, 
+                    31, 33, 34, 36, 37, 39, 40, 42, 43, 45, 46, 48}
+precio_premium = 250000
+precio_general = 170300
+
+pasajeros = {}
+
+def mostrar_asientos_completos_con_separador():
+    asientos = list(range(1, 49))  
+    
+
+    for fila in range(0, len(asientos), 6):
+        fila_asientos = []
+        for i in range(6):
+            if fila + i < len(asientos):
+                asiento_numero = asientos[fila + i]
+            
+                if asiento_numero in pasajeros:
+                    fila_asientos.append("X")  
+                else:
+                    fila_asientos.append(f"{asiento_numero:<2}")  
+
+        print(f"| {fila_asientos[0]:<2}   {fila_asientos[1]:<2}   {fila_asientos[2]:<2}              {fila_asientos[3]:<2}   {fila_asientos[4]:<2}   {fila_asientos[5]:<2} |")
+        
+        if fila == 18: 
+            print("           |________________________ ")
+            print("      _______________________|")
+            print("           |________________________")
+            print("      _______________________|")
+        elif fila < 24:  
+            print("|                                        |")
+
+    print("|" + "_"*43 + "|")
+    print("|" + "_"*43 + "|")  
+
+
+def mostrar_asientos():
+    print("Asientos disponibles:")
+    for asiento in range(1, 49):
+        if asiento in pasajeros:
+            print(f"{asiento}: X", end="  ")  
+        else:
+            print(f"{asiento}: {asiento}", end="  ") 
+        if asiento % 6 == 0:
+            print()  
+
+def comprar_asiento():
+    mostrar_asientos_completos_con_separador()
+    try:
+        asiento = int(input("\nSeleccione un asiento disponible: "))
+        if asiento in pasajeros:
+            print("El asiento ya está ocupado.")
+            return
+        
+
+        if asiento in asientos_premium:
+            precio = precio_premium
+        else:
+            precio = precio_general
+        
+
+        nombre = input("Ingrese nombre y apellidos del pasajero: ")
+
+        while True:
+                  
+          rut = input("Ingrese RUT del pasajero (sin puntos ni guión): ")
+          if 9 <= len(rut) <= 10 and rut.isdigit():
+            break
+          else:
+            print("RUT inválido. Debe tener entre 9 y 10 dígitos.")
+
+  
+        telefono = input("Ingrese teléfono del pasajero: ")
+        banco = input("Ingrese banco del pasajero: ")
+
+    
+        if banco.lower() == "bancoduoc":
+            precio *= 0.88 
+        
+     
+        pasajeros[asiento] = {
+            "nombre": nombre,
+            "rut": rut,
+            "telefono": telefono,
+            "banco": banco,
+            "precio": precio
+        }
+        print(f"El asiento {asiento} ha sido comprado por {nombre}. Total a pagar: ${precio:.2f}")
+    except ValueError:
+        print("Por favor, ingrese un número de asiento válido.")
+
+
+def anular_pasaje():
+    try:
+        asiento = int(input("Ingrese el número del asiento que desea anular: "))
+        if asiento in pasajeros:
+            rut = input("Ingrese su RUT para verificar: ")
+            if pasajeros[asiento]["rut"] == rut:
+                del pasajeros[asiento]
+                print(f"El asiento {asiento} ha sido liberado.")
+            else:
+                print("El RUT no coincide con el registrado para este asiento.")
+        else:
+            print("El asiento no está ocupado.")
+    except ValueError:
+        print("Por favor, ingrese un número de asiento válido.")
+
+
+def modificar_datos():
+    try:
+        asiento = int(input("Ingrese el número del asiento que desea modificar: "))
+        if asiento in pasajeros:
+            rut = input("Ingrese el RUT para verificar: ")
+            if pasajeros[asiento]["rut"] == rut:
+                print("1. Modificar nombre")
+                print("2. Modificar teléfono")
+                opcion = int(input("Seleccione la opción que desea modificar: "))
+                if opcion == 1:
+                    nuevo_nombre = input("Ingrese el nuevo nombre y apellidos: ")
+                    pasajeros[asiento]["nombre"] = nuevo_nombre
+                    print("Nombre actualizado.")
+                elif opcion == 2:
+                    nuevo_telefono = input("Ingrese el nuevo teléfono: ")
+                    pasajeros[asiento]["telefono"] = nuevo_telefono
+                    print("Teléfono actualizado.")
+                else:
+                    print("Opción no válida.")
+            else:
+                print("RUT incorrecto.")
+        else:
+            print("El asiento no está ocupado.")
+    except ValueError:
+        print("Por favor, ingrese un número de asiento válido.")
+
+
+def menu():
+    while True:
+        print("\n----- Menú Principal -----")
+        print("--------------------------------")        
+        print("bienvenido a Línea Aérea TETINKA ")
+        print("1. Ver asientos disponibles")
+        print("2. Comprar asiento")
+        print("3. Anular pasaje")
+        print("4. Modificar datos de pasajero")
+        print("5. Salir")
+        opcion = input("Seleccione una opción: ")
+
+        if opcion == "1":
+            mostrar_asientos_completos_con_separador()  # Usando la función nueva
+        elif opcion == "2":
+            comprar_asiento()
+        elif opcion == "3":
+            anular_pasaje()
+        elif opcion == "4":
+            modificar_datos()
+        elif opcion == "5":
+            print("Gracias por utilizar Línea Aérea TETINKA ")
+            break
+        else:
+            print("Opción no válida.")
+menu()
